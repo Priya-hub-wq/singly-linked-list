@@ -1,0 +1,161 @@
+#include <iostream>
+#include <string>
+using namespace std;
+
+// Structure for each patient node
+struct Patient {
+    int id;
+    string name;
+    string condition;
+    Patient* next;
+};
+
+// Queue class using singly linked list
+class EmergencyQueue {
+private:
+    Patient* front;
+    Patient* rear;
+
+public:
+    EmergencyQueue() {
+        front = rear = nullptr;
+    }
+
+    // Receptionist: Add patient to end
+    void addPatient(int id, string name, string condition) {
+        Patient* newPatient = new Patient{id, name, condition, nullptr};
+        if (rear == nullptr) {
+            front = rear = newPatient;
+        } else {
+            rear->next = newPatient;
+            rear = newPatient;
+        }
+        cout << "Patient added: " << name << endl;
+    }
+
+    // Doctor: Remove patient from front
+    void examinePatient() {
+        if (front == nullptr) {
+            cout << "No patients in the queue.\n";
+            return;
+        }
+
+        Patient* temp = front;
+        cout << "Examining patient: " << temp->name << endl;
+        front = front->next;
+        if (front == nullptr) rear = nullptr;
+        delete temp;
+    }
+
+    // Nurse: Move patient to front if condition worsens
+    void promotePatient(int id) {
+        if (!front || !front->next) {
+            cout << "Not enough patients to promote.\n";
+            return;
+        }
+
+        if (front->id == id) {
+            cout << "Patient is already at front.\n";
+            return;
+        }
+
+        Patient* prev = front;
+        Patient* curr = front->next;
+
+        while (curr && curr->id != id) {
+            prev = curr;
+            curr = curr->next;
+        }
+
+        if (!curr) {
+            cout << "Patient ID not found.\n";
+            return;
+        }
+
+        // Remove curr from current position
+        prev->next = curr->next;
+        if (curr == rear) rear = prev;
+
+        // Insert at front
+        curr->next = front;
+        front = curr;
+
+        cout << "Patient " << curr->name << " promoted to front.\n";
+    }
+
+    // Display queue
+    void displayQueue() {
+        if (!front) {
+            cout << "Queue is empty.\n";
+            return;
+        }
+
+        Patient* temp = front;
+        cout << "\nEmergency Room Queue:\n";
+        while (temp) {
+            cout << "ID: " << temp->id << ", Name: " << temp->name << ", Condition: " << temp->condition << endl;
+            temp = temp->next;
+        }
+    }
+
+    // Destructor
+    ~EmergencyQueue() {
+        while (front) {
+            Patient* temp = front;
+            front = front->next;
+            delete temp;
+        }
+    }
+};
+
+// Main function to demonstrate functionality
+int main() {
+    EmergencyQueue queue;
+    int choice, id;
+    string name, condition;
+
+    do {
+        cout << "\n--- Emergency Room Management ---\n";
+        cout << "1. Add Patient\n";
+        cout << "2. Examine Patient (Remove Front)\n";
+        cout << "3. Promote Patient\n";
+        cout << "4. Display Queue\n";
+        cout << "5. Exit\n";
+        cout << "Enter choice: ";
+        cin >> choice;
+
+        switch (choice) {
+            case 1:
+                cout << "Enter ID, Name, Condition: ";
+                cin >> id >> ws;
+                getline(cin, name);
+                getline(cin, condition);
+                queue.addPatient(id, name, condition);
+                break;
+
+            case 2:
+                queue.examinePatient();
+                break;
+
+            case 3:
+                cout << "Enter ID of patient to promote: ";
+                cin >> id;
+                queue.promotePatient(id);
+                break;
+
+            case 4:
+                queue.displayQueue();
+                break;
+
+            case 5:
+                cout << "Exiting...\n";
+                break;
+
+            default:
+                cout << "Invalid option.\n";
+        }
+
+    } while (choice != 5);
+
+    return 0;
+}
