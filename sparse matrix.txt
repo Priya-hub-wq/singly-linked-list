@@ -1,0 +1,54 @@
+
+   #include <iostream>
+using namespace std;
+
+int main() {
+    int rows, cols;
+
+    // Input matrix size
+    cout << "Enter number of rows and columns: ";
+    cin >> rows >> cols;
+
+    int matrix[10][10]; // Adjust size if needed
+
+    // Input normal matrix
+    cout << "Enter elements of the matrix:\n";
+    for (int i = 0; i < rows; i++) {
+        for (int j = 0; j < cols; j++) {
+            cin >> matrix[i][j];
+        }
+    }
+
+    // Display normal matrix
+    cout << "\nNormal Matrix:\n";
+    for (int i = 0; i < rows; i++) {
+        for (int j = 0; j < cols; j++) {
+            cout << matrix[i][j] << " ";
+        }
+        cout << endl;
+    }
+
+    // Convert to sparse matrix (triplet form)
+    int sparse[100][3]; // row, col, value
+    int k = 0; // counter for non-zero elements
+
+    for (int i = 0; i < rows; i++) {
+        for (int j = 0; j < cols; j++) {
+            if (matrix[i][j] != 0) {
+                sparse[k][0] = i;        // Row index
+                sparse[k][1] = j;        // Column index
+                sparse[k][2] = matrix[i][j]; // Value
+                k++;
+            }
+        }
+    }
+
+    // Display sparse matrix
+    cout << "\nSparse Matrix (Row Col Value):\n";
+    for (int i = 0; i < k; i++) {
+        cout << sparse[i][0] << " " << sparse[i][1] << " " << sparse[i][2] << endl;
+    }
+
+    return 0;
+}
+
