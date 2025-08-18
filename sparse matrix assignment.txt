@@ -1,0 +1,78 @@
+#include <iostream>
+#include <iomanip>
+using namespace std;
+
+int main() {
+    int students, subjects;
+    cout << "Enter number of students and subjects: ";
+    cin >> students >> subjects;
+
+    int grades[100][100] = {0};  
+
+    cout << "Enter grades matrix (0 if student didn't take subject):\n";
+    for (int i = 0; i < students; i++) {
+        for (int j = 0; j < subjects; j++) {
+            cin >> grades[i][j];
+        }
+    }
+
+    // Calculate average per subject
+    cout << fixed << setprecision(2);
+    double sumGrades[100] = {0};
+    int countGrades[100] = {0};
+    int maxGrades[100];
+    int maxStudent[100];
+
+    for (int j=0;j < subjects; j++) {
+        maxGrades[j] = -1;
+        maxStudent[j] = -1;
+        for (int i = 0; i < students; i++) {
+            if (grades[i][j] > 0) {
+                sumGrades[j] += grades[i][j];
+                countGrades[j]++;
+                if (grades[i][j] > maxGrades[j]) {
+                    maxGrades[j] = grades[i][j];
+                    maxStudent[j] = i;
+                }
+            }
+        }
+    }
+
+    cout << "\nAverage grades per subject:\n";
+    for (int j = 0; j < subjects; j++) {
+        if (countGrades[j] == 0)
+            cout << "Subject " << j << ": No grades\n";
+        else
+            cout << "Subject " << j << ": " << (sumGrades[j] / countGrades[j]) << "\n";
+    }
+
+    cout << "\nStudents with highest grade per subject:\n";
+    for (int j = 0; j < subjects; j++) {
+        if (maxGrades[j] == -1)
+            cout << "Subject " << j << ": No grades\n";
+        else
+            cout << "Subject " << j << ": Student " << maxStudent[j]
+                 << " with grade " << maxGrades[j] << "\n";
+    }
+
+    // Find subject with highest average
+    int bestSubject = -1;
+    double bestAvg = -1;
+    for (int j = 0; j < subjects; j++) {
+        if (countGrades[j] > 0) {
+            double avg = sumGrades[j] / countGrades[j];
+            if (avg > bestAvg) {
+                bestAvg = avg;
+                bestSubject = j;
+            }
+        }
+    }
+
+    if (bestSubject == -1)
+        cout << "\nNo subjects have grades.\n";
+    else
+        cout << "\nSubject with highest average grade: " << bestSubject
+             << " (" << bestAvg << ")\n";
+
+    return 0;
+}
