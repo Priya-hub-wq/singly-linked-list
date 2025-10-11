@@ -1,0 +1,200 @@
+#include <iostream>
+#include <queue>
+using namespace std;
+
+// Node structure
+struct Node {
+    int data;
+    Node* left;
+    Node* right;
+};
+
+// Create a new node
+Node* createNode(int data) {
+    Node* newNode = new Node();
+    newNode->data = data;
+    newNode->left = newNode->right = nullptr;
+    return newNode;
+}
+
+// Insert a node (ignore duplicates)
+Node* insert(Node* root, int data) {
+    if (!root) return createNode(data);
+    if (data < root->data)
+        root->left = insert(root->left, data);
+    else if (data > root->data)
+        root->right = insert(root->right, data);
+    else
+        cout << "Duplicate entry " << data << " ignored.\n";
+    return root;
+}
+
+// Find minimum node in BST
+Node* findMin(Node* root) {
+    while (root && root->left)
+        root = root->left;
+    return root;
+}
+
+// Delete a node
+Node* deleteNode(Node* root, int key) {
+    if (!root) return root;
+    if (key < root->data)
+        root->left = deleteNode(root->left, key);
+    else if (key > root->data)
+        root->right = deleteNode(root->right, key);
+    else {
+        // Node with only one child or no child
+        if (!root->left) {
+            Node* temp = root->right;
+            delete root;
+            return temp;
+        } else if (!root->right) {
+            Node* temp = root->left;
+            delete root;
+            return temp;
+        }
+        // Node with two children
+        Node* temp = findMin(root->right);
+        root->data = temp->data;
+        root->right = deleteNode(root->right, temp->data);
+    }
+    return root;
+}
+
+// Search for a value
+bool search(Node* root, int key) {
+    if (!root) return false;
+    if (root->data == key) return true;
+    if (key < root->data) return search(root->left, key);
+    return search(root->right, key);
+}
+
+// Inorder traversal
+void inorder(Node* root) {
+    if (!root) return;
+    inorder(root->left);
+    cout << root->data << " ";
+    inorder(root->right);
+}
+
+// Preorder traversal
+void preorder(Node* root) {
+    if (!root) return;
+    cout << root->data << " ";
+    preorder(root->left);
+    preorder(root->right);
+}
+
+// Postorder traversal
+void postorder(Node* root) {
+    if (!root) return;
+    postorder(root->left);
+    postorder(root->right);
+    cout << root->data << " ";
+}
+
+// Calculate depth/height of tree
+int depth(Node* root) {
+    if (!root) return 0;
+    int leftDepth = depth(root->left);
+    int rightDepth = depth(root->right);
+    return max(leftDepth, rightDepth) + 1;
+}
+
+// Mirror the tree
+Node* mirror(Node* root) {
+    if (!root) return nullptr;
+    Node* mirrored = createNode(root->data);
+    mirrored->left = mirror(root->right);
+    mirrored->right = mirror(root->left);
+    return mirrored;
+}
+
+// Copy the tree
+Node* copyTree(Node* root) {
+    if (!root) return nullptr;
+    Node* newRoot = createNode(root->data);
+    newRoot->left = copyTree(root->left);
+    newRoot->right = copyTree(root->right);
+    return newRoot;
+}
+
+// Display parent nodes with children
+void displayParents(Node* root) {
+    if (!root) return;
+    if (root->left || root->right) {
+        cout << "Parent: " << root->data;
+        if (root->left) cout << ", Left Child: " << root->left->data;
+        if (root->right) cout << ", Right Child: " << root->right->data;
+        cout << endl;
+    }
+    displayParents(root->left);
+    displayParents(root->right);
+}
+
+// Display leaf nodes
+void displayLeaves(Node* root) {
+    if (!root) return;
+    if (!root->left && !root->right)
+        cout << root->data << " ";
+    displayLeaves(root->left);
+    displayLeaves(root->right);
+}
+
+// Display tree level-wise (Breadth-First)
+void displayLevelWise(Node* root) {
+    if (!root) return;
+    queue<Node*> q;
+    q.push(root);
+    while (!q.empty()) {
+        Node* temp = q.front(); q.pop();
+        cout << temp->data << " ";
+        if (temp->left) q.push(temp->left);
+        if (temp->right) q.push(temp->right);
+    }
+}
+
+int main() {
+    Node* root = nullptr;
+
+    // Insert nodes
+    int values[] = {50, 30, 70, 20, 40, 60, 80};
+    for (int val : values) root = insert(root, val);
+    root = insert(root, 30); // Duplicate example
+
+    cout << "Inorder Traversal: "; inorder(root); cout << endl;
+    cout << "Preorder Traversal: "; preorder(root); cout << endl;
+    cout << "Postorder Traversal: "; postorder(root); cout << endl;
+
+    cout << "Depth of tree: " << depth(root) << endl;
+
+    cout << "Search for 40: ";
+    cout << (search(root, 40) ? "Found\n" : "Not Found\n");
+
+    // Delete a node
+    root = deleteNode(root, 20);
+    cout << "Inorder after deleting 20: "; inorder(root); cout << endl;
+
+    // Mirror tree
+    Node* mirrored = mirror(root);
+    cout << "Inorder of mirrored tree: "; inorder(mirrored); cout << endl;
+
+    // Copy tree
+    Node* copy = copyTree(root);
+    cout << "Inorder of copied tree: "; inorder(copy); cout << endl;
+
+    // Display parent nodes with children
+    cout << "\nParent nodes with children:\n";
+    displayParents(root);
+
+    // Display leaf nodes
+    cout << "\nLeaf nodes: ";
+    displayLeaves(root); cout << endl;
+
+    // Display level-wise
+    cout << "Level-wise display: ";
+    displayLevelWise(root); cout << endl;
+
+    return 0;
+}
