@@ -1,0 +1,111 @@
+#include <iostream>
+#include <string>
+using namespace std;
+
+struct Product {
+    int id;
+    string name;
+    int quantity;
+    float price;
+    Product* related; // pointer to related product (like same category)
+};
+
+// Max inventory size
+const int SIZE = 10;
+Product* inventory[SIZE];
+int countProducts = 0;
+
+// Function to add product
+void addProduct(int id, string name, int quantity, float price, Product* related = NULL) {
+    if (countProducts < SIZE) {
+        Product* p = new Product(); 
+        p->id = id;
+        p->name = name;
+        p->quantity = quantity;
+        p->price = price;
+        p->related = related;
+        inventory[countProducts++] = p;
+        cout << "Product Added Successfully!\n";
+    } else {
+        cout << "Inventory Full!\n";
+    }
+}
+
+// Update quantity
+void updateQuantity(int id, int newQty) {
+    for (int i = 0; i < countProducts; i++) {
+        if (inventory[i]->id == id) {
+            inventory[i]->quantity = newQty;
+            cout << "Quantity Updated!\n";
+            return;
+        }
+    }
+    cout << "Product Not Found!\n";
+}
+
+// Calculate total value
+void calculateValue() {
+    float total = 0;
+    for (int i = 0; i < countProducts; i++) {
+        total += inventory[i]->quantity * inventory[i]->price;
+    }
+    cout << "Total Inventory Value: $" << total << endl;
+}
+
+// Display all products
+void displayInventory() {
+    cout << "\n--- Inventory List ---\n";
+    for (int i = 0; i < countProducts; i++) {
+        cout << "ID: " << inventory[i]->id
+             << ", Name: " << inventory[i]->name
+             << ", Qty: " << inventory[i]->quantity
+             << ", Price: $" << inventory[i]->price;
+        
+        if (inventory[i]->related != NULL)
+            cout << " -> Related: " << inventory[i]->related->name;
+        cout << endl;
+    }
+}
+
+int main() {
+    // Initial products
+    addProduct(101, "Laptop", 50, 800);
+    addProduct(102, "Smartphone", 100, 500, inventory[0]); // related to Laptop
+    addProduct(103, "Tablet", 30, 400, inventory[1]); // related to Smartphone
+
+    int choice, id, qty;
+    string name;
+    float price;
+
+    do {
+        cout << "\n--- Warehouse Menu ---\n";
+        cout << "1. Add Product\n2. Update Quantity\n3. Display Inventory\n4. Total Value\n5. Exit\n";
+        cin >> choice;
+
+        switch(choice) {
+            case 1:
+                cout << "Enter ID Name Quantity Price: ";
+                cin >> id >> name >> qty >> price;
+                addProduct(id, name, qty, price);
+                break;
+            case 2:
+                cout << "Enter Product ID & New Quantity: ";
+                cin >> id >> qty;
+                updateQuantity(id, qty);
+                break;
+            case 3:
+                displayInventory();
+                break;
+            case 4:
+                calculateValue();
+                break;
+            case 5:
+                cout << "Exiting...\n";
+                break;
+            default:
+                cout << "Invalid Choice!\n";
+        }
+    } while (choice != 5);
+
+    return 0;
+}
