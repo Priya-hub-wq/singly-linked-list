@@ -1,0 +1,132 @@
+#include <iostream>
+#include <string>
+using namespace std;
+
+#define MAX 5  // Maximum size of circular queue
+
+struct Order {
+    int orderID;
+    string items;
+    string customerName;
+};
+
+class CircularQueue {
+private:
+    Order queue[MAX];
+    int front, rear;
+
+public:
+    CircularQueue() {
+        front = rear = -1;
+    }
+
+    bool isFull() {
+        return (front == (rear + 1) % MAX);
+    }
+
+    bool isEmpty() {
+        return (front == -1);
+    }
+
+    void enqueue(Order ord) {
+        if (isFull()) {
+            cout << "\nQueue is Full! Can't add more orders.\n";
+            return;
+        }
+        if (isEmpty()) {
+            front = rear = 0;
+        } else {
+            rear = (rear + 1) % MAX;
+        }
+        queue[rear] = ord;
+        cout << "\nOrder Added Successfully!\n";
+    }
+
+    void dequeue() {
+        if (isEmpty()) {
+            cout << "\nNo orders to process!\n";
+            return;
+        }
+
+        cout << "\nProcessing Order:\n";
+        cout << "Order ID: " << queue[front].orderID
+             << ", Customer: " << queue[front].customerName
+             << ", Items: " << queue[front].items << endl;
+
+        if (front == rear) {
+            front = rear = -1; // only one order
+        } else {
+            front = (front + 1) % MAX;
+        }
+    }
+
+    void display() {
+        if (isEmpty()) {
+            cout << "\nNo orders in queue!\n";
+            return;
+        }
+
+        cout << "\n--- Current Orders in Drive-Thru Queue ---\n";
+        int i = front;
+        while (true) {
+            cout << "Order ID: " << queue[i].orderID
+                 << ", Customer: " << queue[i].customerName
+                 << ", Items: " << queue[i].items << endl;
+
+            if (i == rear) break;
+            i = (i + 1) % MAX;
+        }
+    }
+};
+
+int main() {
+    CircularQueue driveThru;
+
+    // Initial Orders
+    driveThru.enqueue({101, "Burger, Fries, Drink", "Rahul Sharma"});
+    driveThru.enqueue({102, "Chicken Sandwich, Salad, Drink", "Priya Patel"});
+    driveThru.enqueue({103, "Pizza, Wings, Drink", "Aarav Gupta"});
+
+    int choice;
+    do {
+        cout << "\n----- Drive-Thru Order System -----\n";
+        cout << "1. Add New Order\n";
+        cout << "2. Process Next Order\n";
+        cout << "3. Display Orders\n";
+        cout << "4. Exit\n";
+        cout << "Enter choice: ";
+        cin >> choice;
+
+        if (choice == 1) {
+            Order newOrd;
+            cout << "\nEnter Order ID: ";
+            cin >> newOrd.orderID;
+            cin.ignore();
+            cout << "Enter Customer Name: ";
+            getline(cin, newOrd.customerName);
+            cout << "Enter Items: ";
+            getline(cin, newOrd.items);
+
+            driveThru.enqueue(newOrd);
+        }
+
+        else if (choice == 2) {
+            driveThru.dequeue();
+        }
+
+        else if (choice == 3) {
+            driveThru.display();
+        }
+
+        else if (choice == 4) {
+            cout << "\nExiting System...\n";
+        }
+
+        else {
+            cout << "\nInvalid Choice. Try again.\n";
+        }
+
+    } while (choice != 4);
+
+    return 0;
+}
