@@ -1,0 +1,86 @@
+#include <iostream>
+#include <stack>
+#include <algorithm>
+#include <cctype>
+using namespace std;
+
+// Function to return precedence
+int precedence(char c) {
+    if (c == '^')
+        return 3;
+    else if (c == '*' || c == '/')
+        return 2;
+    else if (c == '+' || c == '-')
+        return 1;
+    return -1;
+}
+
+// Infix to Postfix
+string infixToPostfix(string s) {
+    stack<char> st;
+    string result;
+
+    for (char c : s) {
+        // If operand, add to output
+        if (isalnum(c))
+            result += c;
+
+        else if (c == '(')
+            st.push(c);
+
+        else if (c == ')') {
+            while (!st.empty() && st.top() != '(') {
+                result += st.top();
+                st.pop();
+            }
+            st.pop(); // remove '('
+        }
+
+        // Operator encountered
+        else {
+            while (!st.empty() && precedence(st.top()) >= precedence(c)) {
+                result += st.top();
+                st.pop();
+            }
+            st.push(c);
+        }
+    }
+
+    // pop remaining
+    while (!st.empty()) {
+        result += st.top();
+        st.pop();
+    }
+
+    return result;
+}
+
+// Infix to Prefix
+string infixToPrefix(string s) {
+    reverse(s.begin(), s.end());
+
+    // Swap parentheses
+    for (int i = 0; i < s.length(); i++) {
+        if (s[i] == '(') s[i] = ')';
+        else if (s[i] == ')') s[i] = '(';
+    }
+
+    string postfix = infixToPostfix(s);
+    reverse(postfix.begin(), postfix.end());
+
+    return postfix;
+}
+
+int main() {
+    string infix;
+    cout << "Enter Infix Expression: ";
+    cin >> infix;
+
+    string postfix = infixToPostfix(infix);
+    string prefix = infixToPrefix(infix);
+
+    cout << "\nPostfix Expression: " << postfix;
+    cout << "\nPrefix Expression: " << prefix << endl;
+
+    return 0;
+}
