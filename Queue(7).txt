@@ -1,0 +1,89 @@
+#include <iostream>
+#include <queue>
+#include <string>
+using namespace std;
+
+// Structure for Customer Request
+struct Request {
+    int requestID;
+    string customerName;
+    string serviceType;
+};
+
+// Function to display current queue
+void displayQueue(queue<Request> q) {
+    if (q.empty()) {
+        cout << "\nNo requests in queue!\n";
+        return;
+    }
+
+    cout << "\n--- Current Requests in Queue ---\n";
+    while (!q.empty()) {
+        cout << "Request ID: " << q.front().requestID
+             << ", Customer Name: " << q.front().customerName
+             << ", Service Type: " << q.front().serviceType << endl;
+        q.pop();
+    }
+}
+
+int main() {
+    queue<Request> serviceQueue;
+
+    // Initial Requests
+    serviceQueue.push({101, "John Doe", "Technical Support"});
+    serviceQueue.push({102, "Jane Smith", "Billing Inquiry"});
+    serviceQueue.push({103, "David Brown", "Product Information"});
+
+    int choice;
+    do {
+        cout << "\n----- Call Center Service Menu -----\n";
+        cout << "1. Add New Request\n";
+        cout << "2. Process Next Request\n";
+        cout << "3. Display All Requests\n";
+        cout << "4. Exit\n";
+        cout << "Enter your choice: ";
+        cin >> choice;
+
+        if (choice == 1) {
+            Request r;
+            cout << "\nEnter Request ID: ";
+            cin >> r.requestID;
+            cin.ignore();
+            cout << "Enter Customer Name: ";
+            getline(cin, r.customerName);
+            cout << "Enter Service Type: ";
+            getline(cin, r.serviceType);
+
+            serviceQueue.push(r);
+            cout << "\nRequest Added Successfully!\n";
+        }
+
+        else if (choice == 2) {
+            if (!serviceQueue.empty()) {
+                Request r = serviceQueue.front();
+                cout << "\nProcessing Request:\n";
+                cout << "Request ID: " << r.requestID
+                     << ", Customer Name: " << r.customerName
+                     << ", Service Type: " << r.serviceType << endl;
+                serviceQueue.pop();
+            } else {
+                cout << "\nNo pending requests to process!\n";
+            }
+        }
+
+        else if (choice == 3) {
+            displayQueue(serviceQueue);
+        }
+
+        else if (choice == 4) {
+            cout << "\nExiting System...\n";
+        }
+
+        else {
+            cout << "\nInvalid Choice. Try Again.\n";
+        }
+
+    } while (choice != 4);
+
+    return 0;
+}
