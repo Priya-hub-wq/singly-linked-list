@@ -1,0 +1,123 @@
+#include <iostream>
+#include <string>
+using namespace std;
+
+const int TABLE_SIZE = 10;
+
+struct Student {
+    int id;
+    string name;
+    string course;
+    Student* next;
+};
+
+Student* hashTable[TABLE_SIZE] = {NULL};
+
+// Hash Function
+int hashFunction(int id) {
+    return id % TABLE_SIZE;
+}
+
+// Add Student Record
+void addStudent(int id, string name, string course) {
+    int index = hashFunction(id);
+
+    Student* newStudent = new Student();
+    newStudent->id = id;
+    newStudent->name = name;
+    newStudent->course = course;
+    newStudent->next = NULL;
+
+    if (hashTable[index] == NULL) {
+        hashTable[index] = newStudent;
+    } else {
+        Student* temp = hashTable[index];
+        while (temp->next != NULL)
+            temp = temp->next;
+        temp->next = newStudent;
+    }
+
+    cout << "Student Added Successfully!\n";
+}
+
+// Search Student by ID
+void searchStudent(int id) {
+    int index = hashFunction(id);
+    Student* temp = hashTable[index];
+
+    while (temp != NULL) {
+        if (temp->id == id) {
+            cout << "\n--- Student Found ---\n";
+            cout << "ID: " << temp->id << endl;
+            cout << "Name: " << temp->name << endl;
+            cout << "Course: " << temp->course << endl;
+            return;
+        }
+        temp = temp->next;
+    }
+
+    cout << "Student Record Not Found!\n";
+}
+
+// Display All Records
+void displayRecords() {
+    cout << "\n--- Student Records ---\n";
+    for (int i = 0; i < TABLE_SIZE; i++) {
+        Student* temp = hashTable[i];
+        if (temp != NULL) {
+            cout << "Index " << i << ": ";
+            while (temp != NULL) {
+                cout << "[ID: " << temp->id 
+                     << ", Name: " << temp->name 
+                     << ", Course: " << temp->course << "] -> ";
+                temp = temp->next;
+            }
+            cout << "NULL\n";
+        }
+    }
+}
+
+int main() {
+    int choice, id;
+    string name, course;
+
+    do {
+        cout << "\n--- Student Information System (Hashing) ---\n";
+        cout << "1. Add Student\n2. Search Student\n3. Display All Students\n4. Exit\n";
+        cout << "Enter your choice: ";
+        cin >> choice;
+
+        switch (choice) {
+        case 1:
+            cout << "Enter Student ID: ";
+            cin >> id;
+            cin.ignore();
+            cout << "Enter Name: ";
+            getline(cin, name);
+            cout << "Enter Course: ";
+            getline(cin, course);
+            addStudent(id, name, course);
+            break;
+
+        case 2:
+            cout << "Enter Student ID to Search: ";
+            cin >> id;
+            searchStudent(id);
+            break;
+
+        case 3:
+            displayRecords();
+            break;
+
+        case 4:
+            cout << "Exiting...\n";
+            break;
+
+        default:
+            cout << "Invalid choice! Try again.\n";
+        }
+
+    } while (choice != 4);
+
+    return 0;
+}
